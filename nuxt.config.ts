@@ -27,10 +27,6 @@ export default defineNuxtConfig({
     storageKey: 'nuxt-color-mode'
   },
   app: {
-    // github pages deployment configuration
-    baseURL: process.env.NODE_ENV === 'production' 
-      ? '/egypt/' // replace with your repository name
-      : '/',
     head: {
       title: 'better met interface',
       meta: [
