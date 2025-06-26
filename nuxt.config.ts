@@ -3,10 +3,41 @@ export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
-  // configure for static site generation
+  // configure for static site generation and github pages deployment
   nitro: {
     prerender: {
       routes: ['/sitemap.xml']
+    }
+  },
+  // trailing slash configuration for github pages
+  experimental: {
+    payloadExtraction: false
+  },
+  // base url configuration for github pages deployment
+  app: {
+    baseURL: process.env.NUXT_APP_BASE_URL || '/',
+    head: {
+      title: 'better met interface',
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'explore met gallery in a better way' },
+        { name: 'keywords', content: 'museum, art, ancient, artifacts, met museum' },
+        { property: 'og:title', content: 'MET Gallery' },
+        { property: 'og:description', content: 'better interface for Met Museum' },
+        // { property: 'og:image', content: '/og-image.jpg' },
+        // { name: 'twitter:card', content: 'summary_large_image' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
+      ]
+    }
+  },
+  // router configuration for github pages
+  router: {
+    options: {
+      hashMode: false
     }
   },
   modules: ['@nuxt/eslint',
@@ -25,24 +56,5 @@ export default defineNuxtConfig({
     classSuffix: '',
     storage: 'localStorage', // or 'sessionStorage' or 'cookie'
     storageKey: 'nuxt-color-mode'
-  },
-  app: {
-    head: {
-      title: 'better met interface',
-      meta: [
-        { charset: 'utf-8' },
-        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'explore met gallery in a better way' },
-        { name: 'keywords', content: 'museum, art, ancient, artifacts, met museum' },
-        { property: 'og:title', content: 'MET Gallery' },
-        { property: 'og:description', content: 'better interface for Met Museum' },
-        // { property: 'og:image', content: '/og-image.jpg' },
-        // { name: 'twitter:card', content: 'summary_large_image' }
-      ],
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
-      ]
-    }
   }
 })

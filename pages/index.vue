@@ -1,7 +1,7 @@
 <template>
     <section>
         <p>this is index</p>
-        <a href="/about">go to about</a>
+        <NuxtLink to="/about">go to about</NuxtLink>
     </section>
 </template>
 
