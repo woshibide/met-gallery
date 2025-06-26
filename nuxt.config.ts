@@ -1,7 +1,14 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: false,
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
+  // configure for static site generation
+  nitro: {
+    prerender: {
+      routes: ['/sitemap.xml']
+    }
+  },
   modules: ['@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/image',
@@ -20,6 +27,10 @@ export default defineNuxtConfig({
     storageKey: 'nuxt-color-mode'
   },
   app: {
+    // github pages deployment configuration
+    baseURL: process.env.NODE_ENV === 'production' 
+      ? '/egypt/' // replace with your repository name
+      : '/',
     head: {
       title: 'better met interface',
       meta: [
