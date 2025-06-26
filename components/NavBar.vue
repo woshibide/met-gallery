@@ -55,7 +55,9 @@
     <nav>
         <input type="text" placeholder="search across MET collection..." />
 
-        <ColorScheme />
+        <ClientOnly>
+            <ColorScheme />
+        </ClientOnly>
     </nav>
 </template>
 
