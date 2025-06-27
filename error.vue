@@ -7,10 +7,11 @@
 </template>
 
 <script setup lang="ts">
-// set custom head properties for the 404 page
+
 useHead({
     title: '404 - page not found'
 })
+
 </script>
 
 <style scoped>
