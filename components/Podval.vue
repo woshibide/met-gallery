@@ -5,6 +5,6 @@ footer{
 
 <template>
     <footer>
-        <i>better interface proposal for met museum</i>
+        <i>this is footer for credits</i>
     </footer>
 </template>

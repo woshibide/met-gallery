@@ -173,6 +173,63 @@
         outline-offset: 2px;
     }
 
+    .shake {
+        animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+    }
+
+    @keyframes shake {
+        10%, 90% {
+            transform: translate3d(-1px, 0, 0);
+        }
+        20%, 80% {
+            transform: translate3d(2px, 0, 0);
+        }
+        30%, 50%, 70% {
+            transform: translate3d(-4px, 0, 0);
+        }
+        40%, 60% {
+            transform: translate3d(4px, 0, 0);
+        }
+    }
+
+    .loading-bar {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--accent-color-translucent, rgba(var(--accent-color-rgb), 0.3));
+        overflow: hidden;
+    }
+
+    .loading-bar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--accent-color);
+        animation: loading-shimmer 0.3s infinite linear;
+    }
+
+    @keyframes loading-shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .department-selector-container {
+        grid-column: 1 / -1;
+        position: relative;
+    }
+
     /* respect motion preferences */
     @media (prefers-reduced-motion: reduce) {
         nav,
@@ -190,20 +247,81 @@
 </style>
 
 <template>
-    <nav>
+    <nav :class="{ shake: noResults }">
         <div class="nav-content">
             <button class="menu-button" @click="isMenuOpen = true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
-            <input type="text" placeholder="search across met collection..." />
+            <div style="position: relative; flex: 1;">
+                <input type="text" v-model="searchQuery" @keydown.enter="performSearch" placeholder="search across met collection..." />
+                <div v-if="isLoading" class="loading-bar"></div>
+            </div>
+            <button @click="performSearch">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </button>
+            <button @click="toggleDepartmentSelector">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"></line><line x1="4" x2="4" y1="10" y2="3"></line><line x1="12" x2="12" y1="21" y2="12"></line><line x1="12" x2="12" y1="8" y2="3"></line><line x1="20" x2="20" y1="21" y2="16"></line><line x1="20" x2="20" y1="12" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+            </button>
+        </div>
+        <div class="department-selector-container">
+            <DepartmentSelector :is-open="isDepartmentSelectorOpen" @selection-change="handleDepartmentSelection" />
         </div>
     </nav>
     <SideMenu :is-open="isMenuOpen" @close="isMenuOpen = false" />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, defineEmits } from 'vue';
 import SideMenu from './SideMenu.vue';
+import DepartmentSelector from './DepartmentSelector.vue';
+
+const props = defineProps({
+    noResults: {
+        type: Boolean,
+        default: false
+    },
+    isLoading: {
+        type: Boolean,
+        default: false
+    }
+});
 
 const isMenuOpen = ref(false);
+const searchQuery = ref('');
+const isDepartmentSelectorOpen = ref(false);
+const selectedDepartments = ref([]);
+const emit = defineEmits(['search']);
+
+function toggleDepartmentSelector() {
+    isDepartmentSelectorOpen.value = !isDepartmentSelectorOpen.value;
+    console.log(`[met-gallery-nav]$ department selector toggled. open: ${isDepartmentSelectorOpen.value}`);
+}
+
+function handleDepartmentSelection(departments) {
+    console.log(`[met-gallery-nav]$ received department selection:`, departments);
+    selectedDepartments.value = departments;
+    // only perform search if there's also a query, or let the user press search
+}
+
+const performSearch = () => {
+    const query = searchQuery.value.trim();
+    const depts = selectedDepartments.value;
+
+    // only emit search if there is a query or at least one department is selected.
+    if (query.length > 0 || depts.length > 0) {
+        console.log(`[met-gallery]$ emitting search event for query: "${query}" with departments:`, depts);
+        emit('search', { query: query, departments: depts });
+    } else {
+        console.log('[met-gallery]$ search query and department selection are empty, not emitting search.');
+        // here you could potentially trigger the shake animation directly if you want to indicate an invalid search attempt
+    }
+};
+
+// TODO: no need to search in departments straight away
+// [met-gallery]$ no object ids found for query "" index.vue:145:17
+// [met-gallery]$ current index reset to 0 index.vue:179:13
+// [met-gallery]$ no artworks found for "", stopping fetch.
 </script>
+
+
+
