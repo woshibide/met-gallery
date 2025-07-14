@@ -253,6 +253,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
             </button>
             <div style="position: relative; flex: 1;">
+                <DepartmentSelector />
                 <input type="text" v-model="searchQuery" @keydown.enter="performSearch" placeholder="search across met collection..." />
                 <div v-if="isLoading" class="loading-bar"></div>
             </div>
@@ -270,8 +271,9 @@
     <SideMenu :is-open="isMenuOpen" @close="isMenuOpen = false" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, defineEmits } from 'vue';
+import { useSearchStore } from '~/stores/search';
 import SideMenu from './SideMenu.vue';
 import DepartmentSelector from './DepartmentSelector.vue';
 
@@ -291,6 +293,8 @@ const searchQuery = ref('');
 const isDepartmentSelectorOpen = ref(false);
 const selectedDepartments = ref([]);
 const emit = defineEmits(['search']);
+
+const searchStore = useSearchStore();
 
 function toggleDepartmentSelector() {
     isDepartmentSelectorOpen.value = !isDepartmentSelectorOpen.value;

@@ -45,7 +45,8 @@ export default defineNuxtConfig({
 		'@nuxt/fonts',
 		'@nuxt/image',
 		'@nuxtjs/fontaine',
-		'@nuxtjs/color-mode'],
+		'@nuxtjs/color-mode',
+		'@pinia/nuxt'],
 	css: ['~/assets/css/styles.css', 'normalize.css'],
 	colorMode: {
 		preference: 'system', // default value of $colorMode.preference
