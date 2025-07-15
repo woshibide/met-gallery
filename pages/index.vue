@@ -141,8 +141,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import GallerySeparator from '~/components/GallerySeparator.vue';
+import { useSearchStore } from '~/stores/search';
 
 const objectIDs = ref<number[]>([]);
 const artworks = ref<any[]>([]);
@@ -153,6 +154,21 @@ const selectedDepartments = ref<number[]>([]);
 const noResults = ref(false);
 const showIntro = ref(true);
 const firstFetchCompleted = ref(false);
+const lastScrollY = ref(0);
+
+const searchStore = useSearchStore();
+
+watch(() => searchStore.fetchParams, (params) => {
+  if (params) {
+    console.log('fetch params changed, handling command from terminal', params);
+    if (params.query) {
+        handleSearch({ query: params.query, departments: selectedDepartments.value });
+    } else {
+        fetchArtworks(params.count);
+    }
+    searchStore.clearFetchParams(); // reset after handling
+  }
+});
 
 const metApiBase = 'https://collectionapi.metmuseum.org/public/collection/v1';
 
@@ -361,6 +377,12 @@ async function fetchArtworks(count: number) {
 const handleScroll = () => {
   if (isLoading.value) return;
 
+  const currentScrollY = window.scrollY;
+  const isScrollingDown = currentScrollY > lastScrollY.value;
+  lastScrollY.value = currentScrollY;
+
+  if (!isScrollingDown) return;
+
   // fetch when user is 1000px from the bottom of the page
   const nearBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1000;
 
@@ -372,6 +394,7 @@ const handleScroll = () => {
 
 onMounted(async () => {
   console.log(`component mounted, awaiting user action to start exploring`);
+  lastScrollY.value = window.scrollY;
   window.addEventListener('scroll', handleScroll);
 });
 

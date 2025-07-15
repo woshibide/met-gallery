@@ -12,9 +12,21 @@
         @increase-font-size="increaseFontSize"
         @close="$emit('close')"
       />
-      <div class="terminal-body" ref="terminalBodyRef" :style="{ fontSize: `${fontSize}rem` }">
-        <div v-for="(log, index) in logs" :key="index" class="log-line">
-          <span class="prompt">[@met-gallery ~]$</span> {{ log }}
+      <div class="terminal-body" ref="terminalBodyRef" :style="{ fontSize: `${fontSize}rem` }" @click="focusInput">
+        <div v-for="(log, index) in logs" :key="index" class="log-line" v-html="formatLog(log)">
+        </div>
+        <div class="input-line">
+          <span class="prompt">[@met-gallery ~]$</span>
+          <input
+            ref="commandInput"
+            type="text"
+            v-model="command"
+            @keydown.enter="runCommand"
+            @keydown.up.prevent="navigateHistory('up')"
+            @keydown.down.prevent="navigateHistory('down')"
+            class="terminal-input"
+            autofocus
+          />
         </div>
       </div>
       <div class="resizer" @mousedown="startResize"></div>
@@ -34,6 +46,17 @@ const emit = defineEmits(['close']);
 
 const terminalStore = useTerminalStore();
 const logs = computed(() => terminalStore.logs);
+const command = ref('');
+const commandInput = ref(null);
+const historyIndex = ref(-1);
+
+watch(() => terminalStore.rebooting, (isRebooting) => {
+  if (isRebooting) {
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+});
 
 const sideMenuRef = ref(null);
 const terminalBodyRef = ref(null);
@@ -49,6 +72,45 @@ const decreaseFontSize = () => {
   if (fontSize.value > 0.5) { // set a minimum font size
     fontSize.value -= 0.1;
   }
+};
+
+const runCommand = () => {
+  if (command.value.trim()) {
+    terminalStore.executeCommand(command.value);
+    command.value = '';
+    historyIndex.value = -1; // reset history index
+  }
+};
+
+const navigateHistory = (direction) => {
+  const history = terminalStore.commandHistory;
+  if (history.length === 0) return;
+
+  if (direction === 'up') {
+    if (historyIndex.value < history.length - 1) {
+      historyIndex.value++;
+    }
+  } else { // down
+    if (historyIndex.value > 0) {
+      historyIndex.value--;
+    } else {
+      historyIndex.value = -1;
+      command.value = '';
+      return;
+    }
+  }
+  command.value = history[historyIndex.value];
+};
+
+const formatLog = (log) => {
+  if (log.startsWith('$ ')) {
+    return `<span class="prompt">[@met-gallery ~]$</span> ${log.substring(2)}`;
+  }
+  return log.replace(/\n/g, '<br>');
+};
+
+const focusInput = () => {
+  commandInput.value?.focus();
 };
 
 onMounted(() => {
@@ -134,6 +196,7 @@ watch(() => props.isOpen, (newValue) => {
         padding: var(--space-sm);
         white-space: pre-wrap;
         word-break: break-all;
+        cursor: text;
     }
 
     .log-line {
@@ -143,6 +206,20 @@ watch(() => props.isOpen, (newValue) => {
     .prompt {
       color: var(--accent-color);
       margin-right: var(--space-sm);
+    }
+
+    .input-line {
+      display: flex;
+    }
+
+    .terminal-input {
+      flex-grow: 1;
+      background: transparent;
+      border: none;
+      color: #e0e0e0;
+      font-family: 'Necto', monospace;
+      font-size: inherit;
+      outline: none;
     }
 
     .resizer {

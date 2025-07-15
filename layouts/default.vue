@@ -1,5 +1,6 @@
 <script setup>
 import Podval from '~/components/Podval.vue';
+import Notification from '~/components/Notification.vue';
 </script>
 
 <style>
@@ -16,6 +17,7 @@ main {
 
 <template>
   <div class="page-wrapper">
+    <Notification />
     <main>
       <NuxtPage />
     </main>

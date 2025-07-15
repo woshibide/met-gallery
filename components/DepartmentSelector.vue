@@ -39,6 +39,7 @@
 
 <template>
     <div v-if="isOpen" class="department-selector">
+        <span>Department list</span>
         <div 
             v-for="dept in departments" 
             :key="dept.departmentId" 

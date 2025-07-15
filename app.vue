@@ -1,5 +1,10 @@
+<script setup>
+import Notification from '~/components/Notification.vue';
+</script>
+
 <template>
   <div>
+    <Notification />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

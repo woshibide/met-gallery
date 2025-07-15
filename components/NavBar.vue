@@ -21,12 +21,12 @@ nav {
 }
 
 nav.fade-long {
-    opacity: 0.2;
+    opacity: 0.1;
     transition: opacity 30s linear;
 }
 
 nav.fade-short {
-    opacity: 0.2;
+    opacity: 0.1;
     transition: opacity 10s linear;
 }
 
@@ -214,36 +214,19 @@ nav button:focus-visible {
     }
 }
 
-.loading-bar {
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    /* TODO: could be more elegant */
-    margin-inline: 0.5rem;
-    background-color: var(--accent-color-translucent, rgba(var(--accent-color-rgb), 0.3));
-    overflow: hidden;
+.menu-button.loading-indicator {
+    animation: pulse-shadow 0.2s infinite;
 }
 
-.loading-bar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--accent-color);
-    animation: loading-shimmer 0.3s infinite linear;
-}
-
-@keyframes loading-shimmer {
+@keyframes pulse-shadow {
     0% {
-        transform: translateX(-100%);
+        box-shadow: 0 0 0 0 rgba(var(--accent-color-rgb), 1);
     }
-
+    70% {
+        box-shadow: 0 0 0 4px rgba(var(--accent-color-rgb), 0);
+    }
     100% {
-        transform: translateX(100%);
+        box-shadow: 0 0 0 0 rgba(var(--accent-color-rgb), 0);
     }
 }
 
@@ -278,7 +261,7 @@ nav button:focus-visible {
     >
         <div class="nav-content">
             <!-- menu button with terminal icon -->
-            <button class="menu-button" @click="isMenuOpen = true">
+            <button class="menu-button" :class="{ 'loading-indicator': isLoading }" @click="isMenuOpen = true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="4 17 10 11 4 5"></polyline>
@@ -295,7 +278,6 @@ nav button:focus-visible {
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </button>
-                <div v-if="isLoading" class="loading-bar"></div>
             </div>
             <button class="filter-button" @click="toggleDepartmentSelector">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
