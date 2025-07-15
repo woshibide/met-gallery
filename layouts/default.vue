@@ -9,6 +9,4 @@ body, .page-wrapper {
   <div class="page-wrapper">
     <NuxtPage />
   </div>
-
-  <Podval />
 </template>

@@ -1,11 +1,10 @@
 <style>
 .department-selector {
-    background: var(--bg-secondary);
+    background: var(--bg-transparent);
     padding: var(--space-md);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-lg);
     margin-top: var(--space-sm);
-    grid-column: 4 / 10;
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-sm);
@@ -14,14 +13,15 @@
 }
 
 .department-chip {
+    font-family: 'Necto', monospace;
     background: var(--bg-primary);
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-    padding: var(--space-xs) var(--space-md);
+    padding: calc(var(--space-xs) * 1.4) var(--space-md) var(--space-xs) var(--space-md); 
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all var(--transition-fast);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 .department-chip:hover {
@@ -61,10 +61,9 @@ const emit = defineEmits(['selection-change']);
 
 const departments = ref([]);
 const selectedDepartments = ref([]);
-const logPrefix = '[met-gallery-departments]$';
 
 async function fetchDepartments() {
-    console.log(`${logPrefix} fetching departments...`);
+    console.log(`fetching departments...`);
     try {
         const response = await fetch('https://collectionapi.metmuseum.org/public/collection/v1/departments');
         if (!response.ok) {
@@ -72,21 +71,21 @@ async function fetchDepartments() {
         }
         const data = await response.json();
         departments.value = data.departments || [];
-        console.log(`${logPrefix} successfully fetched ${departments.value.length} departments.`);
+        console.log(`fetched ${departments.value.length} departments.`);
     } catch (error) {
-        console.error(`${logPrefix} failed to fetch departments:`, error);
+        console.error(`failed to fetch departments:`, error);
     }
 }
 
 function toggleDepartment(departmentId) {
-    console.log(`${logPrefix} toggling department id: ${departmentId}`);
+    console.log(`toggling department id: ${departmentId}`);
     const index = selectedDepartments.value.indexOf(departmentId);
     if (index > -1) {
         selectedDepartments.value.splice(index, 1);
     } else {
         selectedDepartments.value.push(departmentId);
     }
-    console.log(`${logPrefix} selected departments:`, selectedDepartments.value);
+    console.log(`selected departments:`, selectedDepartments.value);
     emit('selection-change', selectedDepartments.value);
 }
 
