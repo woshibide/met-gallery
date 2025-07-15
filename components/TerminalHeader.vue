@@ -144,14 +144,14 @@ onUnmounted(() => {
 }
 
 .status-indicator.is-ok {
-  background-color: #3f8;
-  border-color: #3f8;
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
   animation: bleep 1.5s infinite;
 }
 
 @keyframes bleep {
   0% {
-    box-shadow: 0 0 0 0 rgba(51, 255, 136, 0.4);
+    box-shadow: 0 0 0 0 #ff003566;
   }
   70% {
     box-shadow: 0 0 0 10px rgba(51, 255, 136, 0);

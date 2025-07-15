@@ -74,6 +74,11 @@ nav input {
 nav input::placeholder {
     border-radius: var(--radius-md);
     color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+nav input:focus::placeholder {
+    color: transparent;
 }
 
 nav input:focus {
@@ -270,7 +275,7 @@ nav button:focus-visible {
             </button>
             <div id="search-input-container">
                 <input type="text" v-model="searchQuery" @keydown.enter="performSearch"
-                    :placeholder="placeholder" />
+                    :placeholder="placeholder" @focus="onFocus" @blur="onBlur" ref="searchInput" />
                 <button id="search-icon" @click="performSearch">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -304,6 +309,7 @@ nav button:focus-visible {
 <script setup lang="ts">
 import { ref, defineEmits, onMounted, watch } from 'vue';
 import { useSearchStore } from '~/stores/search';
+import { gsap } from 'gsap';
 
 const props = defineProps({
     noResults: {
@@ -323,11 +329,12 @@ const props = defineProps({
 const isMenuOpen = ref(false);
 const searchQuery = ref('');
 const placeholder = ref('search across met collection...');
+const originalPlaceholder = ref('');
 const isDepartmentSelectorOpen = ref(false);
 const selectedDepartments = ref<number[]>([]);
 const emit = defineEmits(['search', 'initial-query-set']);
+const searchInput = ref<HTMLInputElement | null>(null);
 
-const searchStore = useSearchStore();
 
 const navStateClass = ref(''); // can be 'visible', 'fade-long', 'fade-short'
 const isInitialFadeTriggered = ref(false);
@@ -367,7 +374,7 @@ const searchTerms = [
     'andiron',
     'chair',
     'katana',
-    'statue',
+    'mask',
     'cat',
     'armor',
     'gun',
@@ -375,9 +382,32 @@ const searchTerms = [
 
 onMounted(() => {
     const randomQuery = searchTerms[Math.floor(Math.random() * searchTerms.length)];
-    placeholder.value = randomQuery;
+    placeholder.value = `i.e. ${randomQuery}`;
+    originalPlaceholder.value = placeholder.value;
     emit('initial-query-set', { query: randomQuery, departments: [] });
 });
+
+function onFocus() {
+    const tl = gsap.timeline();
+    tl.to(searchInput.value, {
+        duration: 0.2,
+        onComplete: () => {
+            placeholder.value = 'try a keyword you desire to see';
+        }
+    });
+}
+
+function onBlur() {
+    if (!searchQuery.value) {
+        const tl = gsap.timeline();
+        tl.to(searchInput.value, {
+            duration: 0.2,
+            onComplete: () => {
+                placeholder.value = originalPlaceholder.value;
+            }
+        });
+    }
+}
 
 function toggleDepartmentSelector() {
     isDepartmentSelectorOpen.value = !isDepartmentSelectorOpen.value;

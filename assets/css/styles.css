@@ -1,44 +1,4 @@
 @font-face {
-    font-family: 'Abordage';
-    src: url('/fonts/Abordage-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Basalte';
-    src: url('/fonts/Basalte-Fond.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Director';
-    src: url('/fonts/Director-Regular.woff2') format('woff2');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Director';
-    src: url('/fonts/Director-Bold.woff2') format('woff2');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Director';
-    src: url('/fonts/Director-Light.woff2') format('woff2');
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
     font-family: 'Necto';
     src: url('/fonts/Necto-Mono.woff2') format('woff2');
     font-weight: 300;
@@ -49,8 +9,6 @@
 :root {
     font-size: 18px;
 
-    --abordage: 'Abordage', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --basalte: 'Basalte', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     --necto: 'Necto', monospace;
 
     /* light theme colors */
@@ -168,12 +126,15 @@ p {
     font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
+a {
+    color: var(--text-primary);
+    text-decoration: underline solid 2px;
+}
+
 a:visited {
     color: var(--text-primary);
 }
 
 i {
-    font-family: var(--basalte);
-    font-weight: bold;
     font-style: normal;
 }

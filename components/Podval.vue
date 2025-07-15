@@ -8,14 +8,14 @@ footer{
     padding: var(--space-xl);
 }
 
-footer i {
-    grid-column: 2 / 5;
+footer p {
+    grid-column: 1 / 6;
 }
 
 </style>
 
 <template>
     <footer>
-        <i>this website was made by pyotr in the hope that yes studio would hire him. also shotout to MET museum for their api, very nice</i>
+        <p>If you see this, chances are you made too many requests to public API of MET Museum. But cooldown tends to be quick. Take a deep breath, check terminal for status, write <NuxtLink to="https://metmuseum.github.io/" target="_blank" rel="noopener" id="api-link">MET</NuxtLink> a message how awesome that their collection is publicly open, also to <NuxtLink to="https://wshbd.com/about" target="_blank" rel="noopener"> Pyotr Goloub </NuxtLink> for making this fantastic website, then try fetching some artworks again.</p>
     </footer>
 </template>

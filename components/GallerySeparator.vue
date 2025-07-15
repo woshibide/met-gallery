@@ -4,8 +4,12 @@
         <div class="separator-content">
             <span class="separator-text">{{ query }}</span>
             <span v-if="isLoading" class="separator-subtext">loading...</span>
-            <span v-else-if="resultCount !== null" class="separator-subtext">
-                {{ resultCount.toLocaleString() }} results
+            <span
+                v-else-if="resultCount !== null"
+                class="separator-subtext"
+                title="But you will only see here publicly available results that have images"
+            >
+                {{ formattedCount }} {{ resultText }}
             </span>
         </div>
         <span class="separator-line"></span>
@@ -13,7 +17,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
+import { gsap } from 'gsap';
 
 const props = defineProps({
     query: {
@@ -29,6 +34,19 @@ const props = defineProps({
 const resultCount = ref<number | null>(null);
 const isLoading = ref(true);
 const metApiBase = 'https://collectionapi.metmuseum.org/public/collection/v1';
+
+const tweenedCount = ref(0);
+const formattedCount = computed(() => Math.round(tweenedCount.value).toLocaleString());
+
+const resultText = computed(() => {
+    return resultCount.value === 1 ? 'result' : 'results';
+});
+
+watch(resultCount, (newValue) => {
+    if (newValue !== null) {
+        gsap.to(tweenedCount, { duration: 1, value: newValue, ease: 'power1.out' });
+    }
+});
 
 async function fetchResultCount() {
     isLoading.value = true;
@@ -78,13 +96,14 @@ onMounted(() => {
 }
 
 .gallery-separator .separator-text {
+    text-transform: capitalize;
     font-family: var(--director-regular);
     font-size: 1rem;
 }
 
 .separator-subtext {
     display: block;
-    font-family: var(--necto-mono);
+    font-family: var(--necto);
     font-size: 0.8rem;
     margin-top: var(--space-xs);
     color: var(--text-tertiary);

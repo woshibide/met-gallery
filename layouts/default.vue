@@ -7,10 +7,10 @@ import Notification from '~/components/Notification.vue';
 .page-wrapper {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
 }
 
 main {
+  min-height: 100vh;
   flex-grow: 1;
 }
 </style>

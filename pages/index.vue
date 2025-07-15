@@ -1,23 +1,4 @@
 <style>
-    #hero {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        background-color: var(--bg-primary);
-        z-index: 2000;
-    }
-
-    #hero p{
-        width: 65ch;
-        font-size: 1rem;
-    }
 
     #gallery-wall {
         margin-top: 50vh;
@@ -89,72 +70,57 @@
         transform: translateY(2rem);
     }
 
-    .explore-button {
-        margin-top: var(--space-lg);
-        padding: var(--space-md) var(--space-xl);
-        background-color: var(--accent-color);
-        color: var(--bg-primary);
-        border: none;
-        border-radius: var(--radius-md);
-        font-family: var(--director-regular);
-        font-size: 1rem;
-        cursor: pointer;
-        transition: var(--transition-normal);
-        box-shadow: var(--shadow-md);
-    }
-
-    .explore-button:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-    }
-
 </style>
 
 <template>
-    <section>
-        <NavBar @search="handleSearch" @initial-query-set="setInitialQuery" :no-results="noResults" :is-loading="isLoading" :start-fade-out="firstFetchCompleted" />
-        <div id="hero" v-if="showIntro">
-            <h1>this is a better interface for met museum gallery</h1>
-            <p>this website exists for creatives who are looking for cool images against plain background</p>
-            <button class="explore-button" @click="startExploring">explore met collection</button>
-        </div>
-    </section>
-    <transition-group v-if="!showIntro" name="gallery-item" tag="section" id="gallery-wall">
-        <div 
-            v-for="artwork in artworks" 
-            :key="artwork.objectID" 
-            :id="artwork.isSeparator ? artwork.objectID : undefined"
-            :style="{ 'grid-column': artwork.gridColumn }"
-            :class="artwork.isSeparator ? 'gallery-separator-container' : (artwork.isSpacer ? 'gallery-spacer' : 'gallery-artwork')"
-        >
-            <gallery-separator v-if="artwork.isSeparator" :query="artwork.query" :departments="artwork.departments" />
-            
-            <!-- show image and title only for artworks, not spacers -->
-            <a v-if="!artwork.isSpacer && !artwork.isSeparator" :href="artwork.highResUrl" target="_blank">
-                <img :src="artwork.primaryImageSmall" :alt="artwork.title">
-            </a>
-            <!-- TODO: sanitize displayed text i.e. Sword Stand (<i>Katana Kake</i>), sometimes '--' exist -->
-            <p v-if="!artwork.isSpacer && !artwork.isSeparator" class="artwork-title">{{ artwork.title }}</p>
-        </div>
-    </transition-group>
-    
+    <div>
+        <section>
+            <NavBar v-if="!showIntro" @search="handleSearch" @initial-query-set="setInitialQuery" :no-results="noResults" :is-loading="isLoading" :start-fade-out="firstFetchCompleted" />
+            <Hello v-if="showIntro" @start-exploring="startExploring" />
+        </section>
+        <transition-group v-if="!showIntro" name="gallery-item" tag="section" id="gallery-wall">
+            <div 
+                v-for="artwork in artworks" 
+                :key="artwork.objectID" 
+                :id="artwork.isSeparator ? artwork.objectID : undefined"
+                :style="{ 'grid-column': artwork.gridColumn }"
+                :class="artwork.isSeparator ? 'gallery-separator-container' : (artwork.isSpacer ? 'gallery-spacer' : 'gallery-artwork')"
+            >
+                <gallery-separator v-if="artwork.isSeparator" :query="artwork.query" :departments="artwork.departments" />
+                
+                <!-- show image and title only for artworks, not spacers -->
+                <a v-if="!artwork.isSpacer && !artwork.isSeparator" :href="artwork.highResUrl" target="_blank">
+                    <img :src="artwork.primaryImageSmall" :alt="artwork.title">
+                </a>
+                <!-- TODO: sanitize displayed text i.e. Sword Stand (<i>Katana Kake</i>), sometimes '--' exist -->
+                <p v-if="!artwork.isSpacer && !artwork.isSeparator" class="artwork-title">{{ artwork.title }}</p>
+            </div>
+        </transition-group>
+    </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import GallerySeparator from '~/components/GallerySeparator.vue';
+import Hello from '~/components/Hello.vue';
 import { useSearchStore } from '~/stores/search';
+import { useNotificationStore } from '~/stores/notification';
 
-const objectIDs = ref<number[]>([]);
+const showIntro = ref(true);
+const firstFetchCompleted = ref(false);
+
+function startExploring() {
+    showIntro.value = false;
+}
+
 const artworks = ref<any[]>([]);
-const currentIndex = ref(0);
 const isLoading = ref(false);
 const currentQuery = ref(''); // default query
 const selectedDepartments = ref<number[]>([]);
 const noResults = ref(false);
-const showIntro = ref(true);
-const firstFetchCompleted = ref(false);
 const lastScrollY = ref(0);
+const objectIDs = ref<number[]>([]);
+const currentIndex = ref(0);
 
 const searchStore = useSearchStore();
 
@@ -201,6 +167,7 @@ function setInitialQuery(searchParams: { query: string, departments: number[] })
     currentQuery.value = searchParams.query;
     selectedDepartments.value = searchParams.departments;
     console.log(`initial query set to "${searchParams.query}"`);
+    handleSearch(searchParams);
 }
 
 function sleep(ms: number) {
@@ -231,7 +198,7 @@ async function getObjectIDs(retries = 3) {
             console.log(`no object ids found for query "${currentQuery.value}"`);
         }
     } catch (error) {
-        console.error(`error fetching object ids:`, error);
+        console.error(`fetching object ids:`, error);
         if (retries > 0) {
             console.log(`retrying... (${retries - 1} left)`);
             await sleep(1000); // wait 1s before retry
@@ -240,16 +207,6 @@ async function getObjectIDs(retries = 3) {
         objectIDs.value = []; // clear previous results
         noResults.value = true;
         setTimeout(() => noResults.value = false, 500); // remove class after animation
-    }
-}
-
-async function startExploring() {
-    showIntro.value = false;
-    // now that we have the initial query, we can perform the search
-    if (currentQuery.value && artworks.value.length === 0) {
-        await handleSearch({ query: currentQuery.value, departments: selectedDepartments.value });
-    } else {
-        console.log('no initial query set yet, or artworks already loading/loaded.');
     }
 }
 
@@ -325,7 +282,7 @@ async function fetchArtworks(count: number) {
   currentIndex.value += count;
   console.log(`fetching details for ${idsToFetch.length} artworks`);
 
-  const newArtworksPromises = idsToFetch.map(async (id, index) => {
+  const newArtworksPromises = idsToFetch.map(async (id: number, index: number) => {
     await sleep(index * 100); // respectful delay
     console.log(`fetching artwork with id: ${id}`);
     try {
