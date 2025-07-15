@@ -50,8 +50,8 @@ nav.visible {
     background: var(--bg-transparent);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     /* border: 1px solid var(--border-color); */
 }
 
@@ -68,7 +68,6 @@ nav input {
     border-radius: var(--radius-md) 0 0 var(--radius-md);
     flex: 1;
     transition: var(--transition-normal);
-    font-family: var(--abordage);
     font-size: 0.9rem;
 }
 
@@ -94,7 +93,6 @@ nav button {
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: var(--transition-normal);
-    font-family: var(--abordage);
     font-size: 0.9rem;
     font-weight: 500;
     min-width: 44px;
@@ -123,11 +121,10 @@ nav button:active {
     border-radius: var(--radius-md);
     cursor: pointer;
     transition: var(--transition-normal);
-    font-family: var(--abordage);
     font-size: 0.9rem;
     font-weight: 500;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
     box-shadow: var(--shadow-sm);
     min-width: 44px;
     /* accessibility - minimum touch target */
@@ -223,6 +220,8 @@ nav button:focus-visible {
     left: 0;
     width: 100%;
     height: 2px;
+    /* TODO: could be more elegant */
+    margin-inline: 0.5rem;
     background-color: var(--accent-color-translucent, rgba(var(--accent-color-rgb), 0.3));
     overflow: hidden;
 }
@@ -317,7 +316,7 @@ nav button:focus-visible {
             <DepartmentSelector :is-open="isDepartmentSelectorOpen" @selection-change="handleDepartmentSelection" />
         </div>
     </nav>
-    <SideMenu :is-open="isMenuOpen" @close="isMenuOpen = false" />
+    <Terminal :is-open="isMenuOpen" @close="isMenuOpen = false" />
 </template>
 
 <script setup lang="ts">

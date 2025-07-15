@@ -131,6 +131,10 @@ onUnmounted(() => {
   text-decoration: none;
 }
 
+#api-link:hover {
+  text-decoration: underline 2px solid;
+}
+
 .status-indicator {
   width: 10px;
   height: 10px;

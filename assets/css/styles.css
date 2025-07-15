@@ -158,13 +158,14 @@ html {
 }
 
 body {
+    font-family: Georgia, 'Times New Roman', Times, serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
 }
 
 
 p {
-    font-family: var(--abordage);
+    font-family: Georgia, 'Times New Roman', Times, serif;
 }
 
 a:visited {
