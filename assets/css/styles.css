@@ -167,6 +167,10 @@ p {
     font-family: var(--abordage);
 }
 
+a:visited {
+    color: var(--text-primary);
+}
+
 i {
     font-family: var(--basalte);
     font-weight: bold;

@@ -57,6 +57,7 @@
     }
 
     .controls {
+        background-color: aqua;
         padding: var(--space-xl);
         display: flex;
         justify-content: center;
@@ -136,8 +137,7 @@
             <p v-if="!artwork.isSpacer && !artwork.isSeparator" class="artwork-title">{{ artwork.title }}</p>
         </div>
     </transition-group>
-    <div class="controls">
-    </div>
+    
 </template>
 
 <script setup lang="ts">

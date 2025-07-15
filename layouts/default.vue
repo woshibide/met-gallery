@@ -1,12 +1,24 @@
+<script setup>
+import Podval from '~/components/Podval.vue';
+</script>
+
 <style>
-body, .page-wrapper {
-  height: 200vh;
+.page-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex-grow: 1;
 }
 </style>
 
 <template>
-
   <div class="page-wrapper">
-    <NuxtPage />
+    <main>
+      <NuxtPage />
+    </main>
+    <Podval />
   </div>
 </template>

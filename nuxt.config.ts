@@ -29,8 +29,11 @@ export default defineNuxtConfig({
 				// { name: 'twitter:card', content: 'summary_large_image' }
 			],
 			link: [
-				{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-				{ rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }
+				{ rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon_16x16.png' },
+				{ rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon_32x32.png' },
+				{ rel: 'icon', type: 'image/png', sizes: '48x48', href: '/favicon_48x48.png' },
+				{ rel: 'apple-touch-icon', sizes: '180x180', href: '/favicon_180x180.png' },
+				{ rel: 'icon', type: 'image/png', sizes: '192x192', href: '/favicon_192x192.png' }
 			]
 		},
 		pageTransition: { name: 'page', mode: 'out-in' }

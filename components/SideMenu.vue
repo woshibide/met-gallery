@@ -6,18 +6,12 @@
       :style="{ width: `${width}px` }"
       ref="sideMenuRef"
     >
-      <div class="terminal-header" @mousedown="startDrag">
-        <div class="header-left">
-          <span>[wshbd.com]</span>
-          <span class="time">{{ amsterdamTime }}</span>
-        </div>
-        <div class="header-right">
-          <button @click="decreaseFontSize" title="decrease font size" class="header-btn">-</button>
-          <button @click="increaseFontSize" title="increase font size" class="header-btn">+</button>
-          <button @click="toggleColorMode" title="toggle color scheme" class="header-btn">◐</button>
-          <button @click="$emit('close')" class="close-btn" title="close terminal">×</button>
-        </div>
-      </div>
+      <TerminalHeader 
+        @start-drag="startDrag"
+        @decrease-font-size="decreaseFontSize"
+        @increase-font-size="increaseFontSize"
+        @close="$emit('close')"
+      />
       <div class="terminal-body" ref="terminalBodyRef" :style="{ fontSize: `${fontSize}rem` }">
         <div v-for="(log, index) in logs" :key="index" class="log-line">
           <span class="prompt">[@met-gallery ~]$</span> {{ log }}
@@ -31,8 +25,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useTerminalStore } from '~/stores/terminal';
-
-const colorMode = useColorMode();
+import TerminalHeader from './TerminalHeader.vue';
 
 const props = defineProps({
   isOpen: Boolean,
@@ -44,15 +37,9 @@ const logs = computed(() => terminalStore.logs);
 
 const sideMenuRef = ref(null);
 const terminalBodyRef = ref(null);
-const width = ref(350); // initial width
+const width = ref(420); // initial width
 const minWidth = 220;
 const fontSize = ref(0.9); // initial font size
-const amsterdamTime = ref('');
-let timeInterval = null;
-
-const toggleColorMode = () => {
-  colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark';
-};
 
 const increaseFontSize = () => {
   fontSize.value += 0.1;
@@ -64,26 +51,11 @@ const decreaseFontSize = () => {
   }
 };
 
-const updateTime = () => {
-  amsterdamTime.value = new Date().toLocaleString('en-us', {
-    timeZone: 'europe/amsterdam',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZoneName: 'short',
-  });
-};
-
 onMounted(() => {
-  updateTime();
-  timeInterval = setInterval(updateTime, 1000);
+  // any other onmounted logic can stay
 });
 
 onUnmounted(() => {
-  if (timeInterval) {
-    clearInterval(timeInterval);
-  }
   stopResize(); // cleanup listeners
 });
 
@@ -154,52 +126,6 @@ watch(() => props.isOpen, (newValue) => {
 
     .side-menu.is-open {
         left: 0;
-    }
-
-    .terminal-header {
-        background: #1e1e1e;
-        padding: var(--space-xs) var(--space-sm);
-        cursor: grab;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #333;
-        font-size: 0.9rem;
-    }
-
-    .header-left {
-        display: flex;
-        align-items: center;
-        gap: var(--space-sm);
-    }
-
-    .header-right {
-        display: flex;
-        align-items: center;
-        gap: var(--space-xs);
-    }
-
-    .time {
-        font-size: 0.8rem;
-        color: #aaa;
-    }
-
-    .terminal-header:active {
-        cursor: grabbing;
-    }
-
-    .close-btn, .header-btn {
-        background: none;
-        border: none;
-        color: #e0e0e0;
-        font-size: 1.2rem;
-        cursor: pointer;
-        line-height: 1;
-    }
-
-    .header-btn {
-        font-size: 1rem;
-        padding: 0 var(--space-xs);
     }
 
     .terminal-body {
