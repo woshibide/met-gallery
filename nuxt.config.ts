@@ -17,7 +17,7 @@ export default defineNuxtConfig({
 	app: {
 		baseURL: process.env.NUXT_APP_BASE_URL || '/',
 		head: {
-			title: 'better met interface',
+			title: 'Met Gallery',
 			meta: [
 				{ charset: 'utf-8' }, // nuxt does it out of the box, but ok
 				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }, // nuxt does it out of the box, but ok

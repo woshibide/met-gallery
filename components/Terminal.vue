@@ -61,7 +61,7 @@ watch(() => terminalStore.rebooting, (isRebooting) => {
 const sideMenuRef = ref(null);
 const terminalBodyRef = ref(null);
 const width = ref(420); // initial width
-const minWidth = 220;
+const minWidth = 400;
 const fontSize = ref(0.75); // initial font size
 
 const increaseFontSize = () => {
